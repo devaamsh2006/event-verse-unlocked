@@ -1,8 +1,10 @@
+
 import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import EventCalendar from '@/components/EventCalendar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import EventsList from '@/components/EventsList';
 
 const Events = () => {
   const [view, setView] = useState<'list' | 'calendar'>('list');
@@ -26,14 +28,13 @@ const Events = () => {
             </Tabs>
           </div>
           
-          {view === 'calendar' ? (
+          <TabsContent value="list" className="mt-0">
+            <EventsList />
+          </TabsContent>
+          
+          <TabsContent value="calendar" className="mt-0">
             <EventCalendar />
-          ) : (
-            <div>
-              {/* Existing event list view content remains here */}
-              <p className="text-center py-12">List view content is here</p>
-            </div>
-          )}
+          </TabsContent>
         </div>
       </main>
       
