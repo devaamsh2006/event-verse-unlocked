@@ -57,20 +57,36 @@ const Navbar = () => {
               </div>
             </Link>
             {isLoggedIn && userRole === 'student' && (
-              <Link to="/dashboard" className="nav-item">
-                <div className="flex items-center gap-2">
-                  <Bookmark className="h-4 w-4" />
-                  <span>My Events</span>
-                </div>
-              </Link>
+              <>
+                <Link to="/dashboard" className="nav-item">
+                  <div className="flex items-center gap-2">
+                    <Bookmark className="h-4 w-4" />
+                    <span>My Events</span>
+                  </div>
+                </Link>
+                <Link to="/volunteer-requests" className="nav-item">
+                  <div className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    <span>Volunteer Requests</span>
+                  </div>
+                </Link>
+              </>
             )}
             {isLoggedIn && userRole === 'organizer' && (
-              <Link to="/manage" className="nav-item">
-                <div className="flex items-center gap-2">
-                  <Award className="h-4 w-4" />
-                  <span>Manage Events</span>
-                </div>
-              </Link>
+              <>
+                <Link to="/manage" className="nav-item">
+                  <div className="flex items-center gap-2">
+                    <Award className="h-4 w-4" />
+                    <span>Manage Events</span>
+                  </div>
+                </Link>
+                <Link to="/club-requests" className="nav-item">
+                  <div className="flex items-center gap-2">
+                    <Award className="h-4 w-4" />
+                    <span>Applications</span>
+                  </div>
+                </Link>
+              </>
             )}
           </div>
           
@@ -135,20 +151,17 @@ const Navbar = () => {
               <div className="flex items-center gap-2">
                 <Button 
                   variant="ghost" 
-                  onClick={() => {
-                    setIsLoggedIn(true);
-                    setUserRole('student');
-                  }}
+                  asChild
                 >
-                  Log in
+                  <Link to="/login">
+                    <LogIn className="mr-2 h-4 w-4" />
+                    Log in
+                  </Link>
                 </Button>
-                <Button 
-                  onClick={() => {
-                    setIsLoggedIn(true);
-                    setUserRole('student');
-                  }}
-                >
-                  Sign up
+                <Button asChild>
+                  <Link to="/signup">
+                    Sign up
+                  </Link>
                 </Button>
               </div>
             )}
@@ -171,12 +184,28 @@ const Navbar = () => {
           <div className="px-2 pt-2 pb-3 space-y-1">
             <Link to="/" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-secondary">Home</Link>
             <Link to="/events" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-secondary">Events</Link>
+            
             {isLoggedIn && userRole === 'student' && (
-              <Link to="/dashboard" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-secondary">My Events</Link>
+              <>
+                <Link to="/dashboard" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-secondary">My Events</Link>
+                <Link to="/volunteer-requests" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-secondary">Volunteer Requests</Link>
+              </>
             )}
+            
             {isLoggedIn && userRole === 'organizer' && (
-              <Link to="/manage" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-secondary">Manage Events</Link>
+              <>
+                <Link to="/manage" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-secondary">Manage Events</Link>
+                <Link to="/club-requests" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-secondary">Applications</Link>
+              </>
             )}
+            
+            {!isLoggedIn && (
+              <>
+                <Link to="/login" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-secondary">Log in</Link>
+                <Link to="/signup" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-secondary">Sign up</Link>
+              </>
+            )}
+            
             <div className="relative mt-3 rounded-md shadow-sm">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <Search className="h-4 w-4 text-gray-400" />
