@@ -20,7 +20,7 @@ const Events = () => {
               Discover Events
             </h1>
             
-            <Tabs defaultValue="list" className="w-full max-w-xs" onValueChange={(value) => setView(value as 'list' | 'calendar')}>
+            <Tabs value={view} onValueChange={(value) => setView(value as 'list' | 'calendar')}>
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="list">List View</TabsTrigger>
                 <TabsTrigger value="calendar">Calendar View</TabsTrigger>
@@ -28,13 +28,8 @@ const Events = () => {
             </Tabs>
           </div>
           
-          <TabsContent value="list" className="mt-0">
-            <EventsList />
-          </TabsContent>
-          
-          <TabsContent value="calendar" className="mt-0">
-            <EventCalendar />
-          </TabsContent>
+          {view === 'list' && <EventsList />}
+          {view === 'calendar' && <EventCalendar />}
         </div>
       </main>
       

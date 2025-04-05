@@ -1,12 +1,13 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Award, Check, X, Mail, Phone } from "lucide-react";
+import { Calendar, Award, Check, X, Mail, Phone, Search } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
+import Navbar from '@/components/Navbar';
 import {
   Dialog,
   DialogContent,
@@ -34,10 +35,22 @@ interface VolunteerApplication {
   status: 'pending' | 'approved' | 'rejected';
 }
 
+interface StudentSearchResult {
+  id: string;
+  name: string;
+  image: string;
+  major: string;
+  year: string;
+  skills: string[];
+  volunteerHours: number;
+}
+
 const ClubRequests = () => {
   const { toast } = useToast();
   const [message, setMessage] = useState("");
   const [selectedApplication, setSelectedApplication] = useState<VolunteerApplication | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearchResults, setShowSearchResults] = useState(false);
   
   // Mock data for volunteer applications
   const [applications, setApplications] = useState<VolunteerApplication[]>([
@@ -99,6 +112,52 @@ const ClubRequests = () => {
     },
   ]);
 
+  // Mock data for student search results
+  const [studentSearchResults, setStudentSearchResults] = useState<StudentSearchResult[]>([
+    {
+      id: "s1",
+      name: "Alex Johnson",
+      image: "/placeholder.svg",
+      major: "Computer Science",
+      year: "Junior",
+      skills: ["Programming", "UI/UX Design", "Project Management"],
+      volunteerHours: 45
+    },
+    {
+      id: "s2",
+      name: "Taylor Smith",
+      image: "/placeholder.svg",
+      major: "Business Administration",
+      year: "Senior",
+      skills: ["Leadership", "Marketing", "Event Planning"],
+      volunteerHours: 60
+    },
+    {
+      id: "s3",
+      name: "Jordan Lee",
+      image: "/placeholder.svg",
+      major: "Electrical Engineering",
+      year: "Sophomore",
+      skills: ["Circuit Design", "Soldering", "3D Printing"],
+      volunteerHours: 25
+    },
+    {
+      id: "s4",
+      name: "Casey Williams",
+      image: "/placeholder.svg",
+      major: "Music Performance",
+      year: "Senior",
+      skills: ["Audio Engineering", "Stage Management", "Composition"],
+      volunteerHours: 55
+    }
+  ]);
+
+  const filteredStudents = studentSearchResults.filter(student => 
+    student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    student.major.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    student.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
   const handleApproveApplication = (applicationId: string) => {
     setApplications(prevApplications => 
       prevApplications.map(app => 
@@ -128,6 +187,20 @@ const ClubRequests = () => {
     
     setMessage("");
     setSelectedApplication(null);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setShowSearchResults(true);
+    }
+  };
+
+  const handleInviteStudent = (studentId: string) => {
+    toast({
+      title: "Invitation Sent",
+      description: `Your volunteer invitation has been sent to the student.`,
+    });
   };
 
   const pendingApplications = applications.filter(app => app.status === 'pending');
@@ -247,75 +320,149 @@ const ClubRequests = () => {
   );
 
   return (
-    <div className="container max-w-screen-md mx-auto py-12 px-4">
-      <div className="flex items-center space-x-4 mb-8">
-        <div className="bg-primary/10 p-3 rounded-full">
-          <Award className="h-6 w-6 text-primary" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold">Volunteer Applications</h1>
-          <p className="text-muted-foreground">Manage volunteer applications for your events</p>
-        </div>
-      </div>
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
       
-      <Tabs defaultValue="pending" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-8">
-          <TabsTrigger value="pending" className="relative">
-            Pending
-            {pendingApplications.length > 0 && (
-              <Badge className="ml-2 bg-yellow-500">{pendingApplications.length}</Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="approved">
-            Approved
-            {approvedApplications.length > 0 && (
-              <Badge className="ml-2 bg-green-500">{approvedApplications.length}</Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="rejected">
-            Rejected
-            {rejectedApplications.length > 0 && (
-              <Badge className="ml-2 bg-red-500">{rejectedApplications.length}</Badge>
-            )}
-          </TabsTrigger>
-        </TabsList>
+      <div className="container max-w-screen-md mx-auto py-12 px-4 flex-grow">
+        <div className="flex items-center space-x-4 mb-8">
+          <div className="bg-primary/10 p-3 rounded-full">
+            <Award className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold">Volunteer Applications</h1>
+            <p className="text-muted-foreground">Manage volunteer applications for your events</p>
+          </div>
+        </div>
         
-        <TabsContent value="pending">
-          {pendingApplications.length > 0 ? (
-            pendingApplications.map(application => (
-              <ApplicationCard key={application.id} application={application} />
-            ))
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">No pending volunteer applications</p>
+        <form onSubmit={handleSearch} className="mb-8">
+          <div className="relative rounded-md shadow-sm">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <Search className="h-4 w-4 text-gray-400" />
             </div>
-          )}
-        </TabsContent>
+            <Input
+              type="text"
+              placeholder="Search for students to invite..."
+              className="pl-10 pr-4"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <Button 
+              type="submit" 
+              className="absolute right-0 top-0 h-full rounded-l-none"
+            >
+              Search
+            </Button>
+          </div>
+        </form>
         
-        <TabsContent value="approved">
-          {approvedApplications.length > 0 ? (
-            approvedApplications.map(application => (
-              <ApplicationCard key={application.id} application={application} />
-            ))
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">No approved volunteer applications</p>
-            </div>
-          )}
-        </TabsContent>
+        {showSearchResults && searchQuery && (
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">Search Results</h2>
+            {filteredStudents.length > 0 ? (
+              <div className="space-y-4">
+                {filteredStudents.map(student => (
+                  <Card key={student.id}>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                      <div className="flex items-center space-x-4">
+                        <Avatar>
+                          <AvatarImage src={student.image} alt={student.name} />
+                          <AvatarFallback>{student.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <CardTitle className="text-lg">{student.name}</CardTitle>
+                          <CardDescription className="text-sm mt-1">
+                            {student.major}, {student.year}
+                          </CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <div>
+                          <span className="text-sm font-medium">Skills: </span>
+                          <span className="text-sm">{student.skills.join(", ")}</span>
+                        </div>
+                        <div>
+                          <span className="text-sm font-medium">Volunteer Hours: </span>
+                          <span className="text-sm">{student.volunteerHours} hours</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="flex justify-end">
+                      <Button onClick={() => handleInviteStudent(student.id)}>
+                        Invite to Volunteer
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 bg-gray-50 rounded-lg">
+                <p className="text-gray-500">No students found matching "{searchQuery}"</p>
+              </div>
+            )}
+          </div>
+        )}
         
-        <TabsContent value="rejected">
-          {rejectedApplications.length > 0 ? (
-            rejectedApplications.map(application => (
-              <ApplicationCard key={application.id} application={application} />
-            ))
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">No rejected volunteer applications</p>
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
+        <Tabs defaultValue="pending" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-8">
+            <TabsTrigger value="pending" className="relative">
+              Pending
+              {pendingApplications.length > 0 && (
+                <Badge className="ml-2 bg-yellow-500">{pendingApplications.length}</Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="approved">
+              Approved
+              {approvedApplications.length > 0 && (
+                <Badge className="ml-2 bg-green-500">{approvedApplications.length}</Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="rejected">
+              Rejected
+              {rejectedApplications.length > 0 && (
+                <Badge className="ml-2 bg-red-500">{rejectedApplications.length}</Badge>
+              )}
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="pending">
+            {pendingApplications.length > 0 ? (
+              pendingApplications.map(application => (
+                <ApplicationCard key={application.id} application={application} />
+              ))
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No pending volunteer applications</p>
+              </div>
+            )}
+          </TabsContent>
+          
+          <TabsContent value="approved">
+            {approvedApplications.length > 0 ? (
+              approvedApplications.map(application => (
+                <ApplicationCard key={application.id} application={application} />
+              ))
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No approved volunteer applications</p>
+              </div>
+            )}
+          </TabsContent>
+          
+          <TabsContent value="rejected">
+            {rejectedApplications.length > 0 ? (
+              rejectedApplications.map(application => (
+                <ApplicationCard key={application.id} application={application} />
+              ))
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No rejected volunteer applications</p>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };

@@ -103,8 +103,63 @@ const sampleEvents = [
     category: "workshop",
     attendees: 60,
     featured: false,
+  },
+  // Additional events for the indicator dots
+  {
+    id: "9",
+    title: "Student Council Meeting",
+    description: "Monthly student council general meeting.",
+    date: "2024-04-08",
+    time: "5:00 PM - 6:30 PM",
+    location: "Student Union Room 302",
+    imageUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
+    category: "meeting",
+    attendees: 25,
+    featured: false,
+  },
+  {
+    id: "10",
+    title: "Photography Workshop",
+    description: "Learn the basics of photography with professional photographers.",
+    date: "2024-04-10",
+    time: "2:00 PM - 4:00 PM",
+    location: "Arts Building",
+    imageUrl: "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
+    category: "workshop",
+    attendees: 30,
+    featured: false,
+  },
+  {
+    id: "11",
+    title: "Networking Social",
+    description: "Mix and mingle with industry professionals.",
+    date: "2024-04-12",
+    time: "6:00 PM - 8:00 PM",
+    location: "Business School Atrium",
+    imageUrl: "https://images.unsplash.com/photo-1511795409834-432f7b1dd1a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
+    category: "networking",
+    attendees: 75,
+    featured: false,
+  },
+  {
+    id: "12",
+    title: "Debate Competition",
+    description: "Annual inter-university debate championship.",
+    date: "2024-04-15",
+    time: "1:00 PM - 5:00 PM",
+    location: "Auditorium",
+    imageUrl: "https://images.unsplash.com/photo-1541872703-74c5e44368f9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80",
+    category: "competition",
+    attendees: 120,
+    featured: false,
   }
 ];
+
+// Function to check if a date has events
+const hasEventsOnDate = (date: Date) => {
+  const formattedDate = format(date, 'yyyy-MM-dd');
+  return sampleEvents.some(event => event.date === formattedDate);
+};
 
 const EventCalendar = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
@@ -140,6 +195,38 @@ const EventCalendar = () => {
                 selected={selectedDate}
                 onSelect={handleSelect}
                 className="rounded-md border shadow p-3 pointer-events-auto"
+                modifiers={{
+                  hasEvent: (date) => hasEventsOnDate(date),
+                }}
+                modifiersStyles={{
+                  hasEvent: { 
+                    position: 'relative',
+                    '::after': {
+                      content: "''",
+                      position: 'absolute',
+                      bottom: '2px',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: '4px',
+                      height: '4px',
+                      borderRadius: '50%',
+                      backgroundColor: 'rgb(34, 197, 94)', // green-500
+                    }
+                  }
+                }}
+                components={{
+                  DayContent: ({ date, displayMonth }) => {
+                    const hasEvent = hasEventsOnDate(date);
+                    return (
+                      <div className="relative flex items-center justify-center h-full w-full">
+                        {date.getDate()}
+                        {hasEvent && (
+                          <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-green-500 rounded-full" />
+                        )}
+                      </div>
+                    );
+                  }
+                }}
               />
               
               <div className="mt-4">
