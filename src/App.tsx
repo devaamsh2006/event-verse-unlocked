@@ -11,6 +11,8 @@ import Signup from "./pages/Signup";
 import VolunteerRequests from "./pages/VolunteerRequests";
 import ClubRequests from "./pages/ClubRequests";
 import NotFound from "./pages/NotFound";
+import StudentDashboard from "./pages/StudentDashboard";
+import ClubDashboard from "./pages/ClubDashboard";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +29,8 @@ const App = () => (
           <Route path="/signup" element={<Signup />} />
           <Route path="/volunteer-requests" element={<VolunteerRequests />} />
           <Route path="/club-requests" element={<ClubRequests />} />
+          <Route path="/dashboard" element={<StudentDashboard />} />
+          <Route path="/manage" element={<ClubDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

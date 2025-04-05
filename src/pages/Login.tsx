@@ -34,7 +34,10 @@ const Login = () => {
   const onSubmit = (data: z.infer<typeof loginSchema>) => {
     console.log(data, userType);
     
-    // Simulate login (in a real app, connect to Supabase or other auth provider)
+    // Set userRole in localStorage
+    localStorage.setItem('userRole', userType);
+    localStorage.setItem('isLoggedIn', 'true');
+    
     toast({
       title: "Login successful",
       description: `Welcome back, ${userType === 'student' ? 'Student' : 'Club Organizer'}!`,

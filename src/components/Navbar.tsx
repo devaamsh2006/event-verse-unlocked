@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Bell, 
   Calendar, 
@@ -28,6 +28,24 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [userRole, setUserRole] = useState<'student' | 'organizer' | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  
+  // Check localStorage on component mount
+  useEffect(() => {
+    const role = localStorage.getItem('userRole') as 'student' | 'organizer' | null;
+    const loginStatus = localStorage.getItem('isLoggedIn') === 'true';
+    
+    setUserRole(role);
+    setIsLoggedIn(loginStatus);
+  }, []);
+  
+  const handleLogout = () => {
+    localStorage.removeItem('userRole');
+    localStorage.setItem('isLoggedIn', 'false');
+    setIsLoggedIn(false);
+    setUserRole(null);
+    navigate('/');
+  };
   
   return (
     <div className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md shadow-sm">
@@ -141,7 +159,7 @@ const Navbar = () => {
                     <DropdownMenuItem>Profile</DropdownMenuItem>
                     <DropdownMenuItem>Settings</DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>
+                    <DropdownMenuItem onClick={handleLogout}>
                       Log out
                     </DropdownMenuItem>
                   </DropdownMenuContent>
